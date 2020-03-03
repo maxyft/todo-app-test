@@ -1,0 +1,18 @@
+.fadeIn-enter-active,
+.fadeIn-leave-active {
+  transition: opacity 0.35s ease;
+}
+.fadeIn-enter,
+.fadeIn-leave-to {
+  opacity: 0;
+}
+
+.slideIn-enter-active,
+.slideIn-leave-active {
+  transition: transform 0.3s, opacity 0.3s;
+}
+.slideIn-enter,
+.slideIn-leave-to {
+  opacity: 0;
+  transform: translateX(-100%);
+}
