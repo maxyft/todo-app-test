@@ -76,6 +76,7 @@ html {
   padding-top: 1rem;
   border-bottom: 1px solid $default-gray-color;
   &__input {
+    background: transparent;
     outline: none;
     border: 0;
     width: 100%;
@@ -84,6 +85,7 @@ html {
   }
 
   &__placeholder {
+    z-index: -1;
     position: absolute;
     color: rgb(156, 156, 156);
     transition: transform 0.3s, opacity 0.3s;
