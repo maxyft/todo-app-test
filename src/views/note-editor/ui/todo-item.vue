@@ -9,7 +9,7 @@
     <custom-input
       class="todo-item-input"
       :placeholder="'Todo text'"
-      :value="todoItem.title" 
+      :value="todoItem.title"
       :hidePlaceholder="true"
       :isError="$v.todoItem.title.$dirty && $v.todoItem.title.$invalid"
       @change="onTodoTitleChange"
@@ -24,61 +24,61 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
-import { Component, Prop, Watch } from 'vue-property-decorator'
-import { ITodo } from '../../../types/todo.types'
-import { validationMixin, Vuelidate } from 'vuelidate'
-import { validations } from '../validation/todo-item.validation'
+import Vue from "vue";
+import { Component, Prop, Watch } from "vue-property-decorator";
+import { ITodo } from "../../../types/todo.types";
+import { validationMixin, Vuelidate } from "vuelidate";
+import { validations } from "../validation/todo-item.validation";
 
-import CustomInput from '../../../components/custom-input.vue'
+import CustomInput from "../../../components/custom-input.vue";
 
-import getObjectClone from '../../../function-helpers/getObjectClone'
+import getObjectClone from "../../../function-helpers/getObjectClone";
 
 @Component({
   components: { CustomInput },
-  mixins: [ validationMixin ],
+  mixins: [validationMixin],
   validations
 })
 export default class TodoItem extends Vue {
   @Prop(Object)
-  todo!: ITodo
+  todo!: ITodo;
 
-  @Watch('todo')
+  @Watch("todo")
   refreshLocalTodo(val: ITodo) {
     // watching on the todo-prop
-    // needed for correctly template updating on UNDO/REDO events    
-    this.todoItem = getObjectClone(val)
+    // needed for correctly template updating on UNDO/REDO events
+    this.todoItem = getObjectClone(val);
   }
 
   // validation object
   // that checks required props of the todo object
-  $v: Vuelidate<any>
-  todoItem: ITodo = getObjectClone(this.todo)
+  $v: Vuelidate<any>;
+  todoItem: ITodo = getObjectClone(this.todo);
 
   onTodoTitleChange(value: string) {
     // write changes to $v object model to use validation features
-    this.$v.todoItem.title.$model = value
-    this.todoItem.title = value
-    this.$emit('todo-change', this.todoItem)
+    this.$v.todoItem.title.$model = value;
+    this.todoItem.title = value;
+    this.$emit("todo-change", this.todoItem);
   }
 }
 </script>
 
 <style lang="scss" scoped>
-  .note-editor__todo-item {
-    display: flex;
-    justify-content: flex-start;
-    align-items: baseline;
-    padding: 0.35rem 0;
-    .todo-item-checkbox {
-      flex-shrink: 1;
-    }
-    .todo-item-input {
-      flex-grow: 1;
-      margin-right: 0.5rem;
-    }
-    .todo-item-button {
-      flex-shrink: 1;
-    }
+.note-editor__todo-item {
+  display: flex;
+  justify-content: flex-start;
+  align-items: baseline;
+  padding: 0.35rem 0;
+  .todo-item-checkbox {
+    flex-shrink: 1;
   }
+  .todo-item-input {
+    flex-grow: 1;
+    margin-right: 0.5rem;
+  }
+  .todo-item-button {
+    flex-shrink: 1;
+  }
+}
 </style>

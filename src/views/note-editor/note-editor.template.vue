@@ -20,10 +20,12 @@
           @click="onRedoLastChange"
         >
           Redo
-        </div>                
+        </div>
       </div>
 
-      <div class="note-editor__button-group note-editor__button-group--justify-end">
+      <div
+        class="note-editor__button-group note-editor__button-group--justify-end"
+      >
         <div
           class="basic-button basic-button--default"
           @click="$router.push('/')"
@@ -46,8 +48,8 @@
         </div>
         <div class="basic-button basic-button--success" @click="onSaveNote">
           Save note
-        </div>        
-      </div>      
+        </div>
+      </div>
 
       <transition name="slideIn">
         <div
@@ -59,23 +61,28 @@
       </transition>
     </div>
     <div class="note-editor__content">
-      <custom-input 
-        :placeholder="'Note Title'" 
+      <custom-input
+        :placeholder="'Note Title'"
         :value="localNote.title"
-        @change="(value) => onNoteChange('title', { data: value })"
+        @change="value => onNoteChange('title', { data: value })"
       />
       <div class="note-editor__todo-list">
         <p class="paragraph note-editor__todo-header">Todo's:</p>
-        <todo-item 
+        <todo-item
           v-for="(todo, index) in localNote.todoList"
           ref="todo-item"
           :key="todo.created"
           :todo="todo"
           @todo-delete="onNoteChange('delete-todo', { index })"
-          @todo-change="(newTodo) => onNoteChange('todo', { index, data: newTodo })"
+          @todo-change="
+            newTodo => onNoteChange('todo', { index, data: newTodo })
+          "
         />
       </div>
-      <div class="basic-button basic-button--primary" @click="onNoteChange('add-todo')">
+      <div
+        class="basic-button basic-button--primary"
+        @click="onNoteChange('add-todo')"
+      >
         Add Todo
       </div>
     </div>

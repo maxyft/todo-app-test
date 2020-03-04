@@ -1,11 +1,10 @@
-import { ValidationRuleset } from 'vuelidate'
-import { required } from 'vuelidate/lib/validators'
+import { ValidationRuleset } from "vuelidate";
+import { required } from "vuelidate/lib/validators";
 
-import { ITodo } from '../../../types/todo.types'
-
+import { ITodo } from "../../../types/todo.types";
 
 export const validations: ValidationRuleset<{
-  todoItem: ITodo
+  todoItem: ITodo;
 }> = {
   todoItem: {
     title: {
@@ -13,4 +12,4 @@ export const validations: ValidationRuleset<{
     },
     done: {}
   }
-}
+};

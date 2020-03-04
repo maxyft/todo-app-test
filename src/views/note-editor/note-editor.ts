@@ -5,10 +5,10 @@ import { Getter, Mutation } from "vuex-class";
 import { INote, ITodo } from "../../types/todo.types";
 
 import ModalWindow from "../../components/modal-component.vue";
-import TodoItem from './ui/todo-item.vue';
-import CustomInput from '../../components/custom-input.vue';
+import TodoItem from "./ui/todo-item.vue";
+import CustomInput from "../../components/custom-input.vue";
 
-import getObjectClone from '../../function-helpers/getObjectClone';
+import getObjectClone from "../../function-helpers/getObjectClone";
 
 @Component({
   components: {
@@ -40,19 +40,17 @@ export default class NoteEditor extends Vue {
 
   undoTempNote: INote | null = null;
 
-  noteSnapshotsUndoStack: INote[] = []
+  noteSnapshotsUndoStack: INote[] = [];
 
-  noteSnapshotsRedoStack: INote[] = []
+  noteSnapshotsRedoStack: INote[] = [];
 
   wait = (time: number) => new Promise(resolve => setTimeout(resolve, time));
-  
+
   created() {
     if (this.noteToEdit !== "new") {
       try {
         // create unreactive clone of stored note
-        this.localNote = getObjectClone(
-          this.noteList[Number(this.noteToEdit)]
-        );
+        this.localNote = getObjectClone(this.noteList[Number(this.noteToEdit)]);
         // create unreactive clone of stored note to use UNDO ALL feature
         this.undoTempNote = getObjectClone(
           this.noteList[Number(this.noteToEdit)]
@@ -60,7 +58,7 @@ export default class NoteEditor extends Vue {
       } catch (error) {
         // return to the note list if the note with the current ID parameter does not exist
         this.$router.replace("/");
-      }      
+      }
     }
   }
 
@@ -69,51 +67,54 @@ export default class NoteEditor extends Vue {
   }
 
   // middleware-function for note update whitch makes possible to use UNDO/REDO logic
-  async onNoteChange(changeType: string, payload: { index: number, data: ITodo | string | boolean }) {
+  async onNoteChange(
+    changeType: string,
+    payload: { index: number; data: ITodo | string | boolean }
+  ) {
     // clean REDO stack and push current snapshot of the note to UNDO stack
-    this.noteSnapshotsRedoStack = []  
-    const currentSnapshot = getObjectClone(this.localNote)
-    this.noteSnapshotsUndoStack.push(currentSnapshot)
+    this.noteSnapshotsRedoStack = [];
+    const currentSnapshot = getObjectClone(this.localNote);
+    this.noteSnapshotsUndoStack.push(currentSnapshot);
 
     switch (changeType) {
-      case 'title':
+      case "title":
         // if the title of the note was updated
-        this.localNote.title = payload.data as string
-        break
-      case 'todo':
+        this.localNote.title = payload.data as string;
+        break;
+      case "todo":
         // if the existing todo-item was updated
-        this.localNote.todoList.splice(payload.index, 1, payload.data as ITodo) 
-        break
-      case 'add-todo':
+        this.localNote.todoList.splice(payload.index, 1, payload.data as ITodo);
+        break;
+      case "add-todo":
         // if new todo-item was added
-        this.addBlancTodoObject()
-        break
-      case 'delete-todo':
+        this.addBlancTodoObject();
+        break;
+      case "delete-todo":
         // if existing todo-item was deleted
         this.localNote.todoList.splice(payload.index, 1);
-        break
+        break;
     }
   }
 
   onUndoLastChange(): void {
     // save current localNote state to REDO stack
-    const currentNoteSnapshot: INote = getObjectClone(this.localNote)
-    this.noteSnapshotsRedoStack.push(currentNoteSnapshot)
+    const currentNoteSnapshot: INote = getObjectClone(this.localNote);
+    this.noteSnapshotsRedoStack.push(currentNoteSnapshot);
 
     // get the last saved snapshot
-    const lastNoteSnapshot: INote = this.noteSnapshotsUndoStack.pop() as INote
-    this.localNote = { ...lastNoteSnapshot }
+    const lastNoteSnapshot: INote = this.noteSnapshotsUndoStack.pop() as INote;
+    this.localNote = { ...lastNoteSnapshot };
   }
 
   onRedoLastChange(): void {
     // save current localNote state to UNDO stack
-    const currentNoteSnapshot: INote = getObjectClone(this.localNote)
-    this.noteSnapshotsUndoStack.push(currentNoteSnapshot)
-    
-    const lastNoteSnapshot: INote = this.noteSnapshotsRedoStack.pop() as INote
-    this.localNote = { ...lastNoteSnapshot }
+    const currentNoteSnapshot: INote = getObjectClone(this.localNote);
+    this.noteSnapshotsUndoStack.push(currentNoteSnapshot);
+
+    const lastNoteSnapshot: INote = this.noteSnapshotsRedoStack.pop() as INote;
+    this.localNote = { ...lastNoteSnapshot };
   }
-  
+
   createBlancNoteObject(): INote {
     return {
       title: "",
@@ -129,17 +130,17 @@ export default class NoteEditor extends Vue {
       done: false
     });
   }
-  
+
   async onSaveNote(): Promise<any> {
     // check that the localNote object is valid
     if (this.isNoteValidationError()) {
-      return
+      return;
     }
 
     if (this.noteToEdit === "new") {
       // in this case i use index as id parameter for /edit route
       const newIndex = this.noteList.length;
-      
+
       // add blanc of note to stored noteList by using a vuex mutation
       this.addNote(this.localNote);
       // replace route with index parameter, to unlock Delete && Undo all functions
@@ -171,8 +172,8 @@ export default class NoteEditor extends Vue {
 
   onUndoDialogOk(): void {
     this.localNote = getObjectClone(this.undoTempNote);
-    this.noteSnapshotsRedoStack = []
-    this.noteSnapshotsUndoStack = []
+    this.noteSnapshotsRedoStack = [];
+    this.noteSnapshotsUndoStack = [];
     this.isUndoDialogShow = false;
   }
 
@@ -191,18 +192,18 @@ export default class NoteEditor extends Vue {
   }
 
   isNoteValidationError(): boolean {
-    let isError = false
+    let isError = false;
     // get the array of todo-item components
-    const todoItems = this.$refs['todo-item'] as Vue[]
+    const todoItems = this.$refs["todo-item"] as Vue[];
     todoItems.forEach(todoItem => {
-      // execute Vuelidate $touch() func inside 
+      // execute Vuelidate $touch() func inside
       // todo-item component to validate todo.title property
-      todoItem.$v.$touch()
+      todoItem.$v.$touch();
       if (todoItem.$v.$invalid) {
-        isError = true
+        isError = true;
       }
-    })
+    });
 
-    return isError
+    return isError;
   }
 }
