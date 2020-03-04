@@ -68,27 +68,41 @@ html {
       color: white;
     }
   }
+  &--disabled {
+    pointer-events: none;
+    border-color: $default-gray-color;
+    color: $default-gray-color;
+  }    
 }
 
 .text-input {
   position: relative;
   padding: 0.15rem;
   padding-top: 1rem;
-  border-bottom: 1px solid $default-gray-color;
+  padding-bottom: 0.5rem;
+  &--error {
+    .text-input__input {
+      border-color: $warn-color;
+    }
+  }
   &__input {
+    padding-bottom: 0.15rem;
     background: transparent;
     outline: none;
     border: 0;
     width: 100%;
     height: 100%;
     font-size: 0.95rem;
+    border-bottom: 1px solid $default-gray-color;
+    transition: 0.2s border-color, 0.2s color;    
   }
 
   &__placeholder {
     z-index: -1;
     position: absolute;
-    color: rgb(156, 156, 156);
+    color: rgb(163, 163, 163);
     transition: transform 0.3s, opacity 0.3s;
+    font-size: 0.95rem;
     &--transformed {
       transform: translateY(-100%);
     }
@@ -96,5 +110,13 @@ html {
       opacity: 0;
       transform: translateY(-100%);
     }
+  }
+  &__error {
+    z-index: -1;
+    position: absolute;
+    color: $warn-color;
+    font-size: 0.85rem;
+    bottom: -0.6rem;
+    left: 0.2rem;
   }
 }

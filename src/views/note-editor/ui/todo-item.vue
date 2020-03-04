@@ -2,27 +2,18 @@
   <div class="note-editor__todo-item">
     <input
       class="todo-item-checkbox"
-      v-model="localTodo.done"
+      v-model="todoItem.done"
       type="checkbox"
-      @change="$emit('todo-change', localTodo)"
+      @change="$emit('todo-change', todoItem)"
     />
-    <div class="text-input todo-item-input">
-      <div
-        class="text-input__placeholder"
-        :class="{
-          'text-input__placeholder--transparent':
-            localTodo.title && localTodo.title.length > 0
-        }"
-      >
-        Todo text
-      </div>
-      <input 
-        class="text-input__input" 
-        type="text" 
-        v-model="localTodo.title" 
-        @change="$emit('todo-change', localTodo)"
-      />
-    </div>
+    <custom-input
+      class="todo-item-input"
+      :placeholder="'Todo text'"
+      :value="todoItem.title" 
+      :hidePlaceholder="true"
+      :isError="$v.todoItem.title.$dirty && $v.todoItem.title.$invalid"
+      @change="onTodoTitleChange"
+    />
     <div
       class="basic-button basic-button--warn todo-item-button"
       @click="$emit('todo-delete')"
@@ -34,15 +25,42 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { Component, Prop } from 'vue-property-decorator'
+import { Component, Prop, Watch } from 'vue-property-decorator'
 import { ITodo } from '../../../types/todo.types'
+import { validationMixin, Vuelidate } from 'vuelidate'
+import { validations } from '../validation/todo-item.validation'
 
-@Component
+import CustomInput from '../../../components/custom-input.vue'
+
+import getObjectClone from '../../../function-helpers/getObjectClone'
+
+@Component({
+  components: { CustomInput },
+  mixins: [ validationMixin ],
+  validations
+})
 export default class TodoItem extends Vue {
   @Prop(Object)
   todo!: ITodo
 
-  localTodo: ITodo = JSON.parse(JSON.stringify(this.todo))
+  @Watch('todo')
+  refreshLocalTodo(val: ITodo) {
+    // watching on the todo-prop
+    // needed for correctly template updating on UNDO/REDO events    
+    this.todoItem = getObjectClone(val)
+  }
+
+  // validation object
+  // that checks required props of the todo object
+  $v: Vuelidate<any>
+  todoItem: ITodo = getObjectClone(this.todo)
+
+  onTodoTitleChange(value: string) {
+    // write changes to $v object model to use validation features
+    this.$v.todoItem.title.$model = value
+    this.todoItem.title = value
+    this.$emit('todo-change', this.todoItem)
+  }
 }
 </script>
 

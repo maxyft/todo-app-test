@@ -4,11 +4,13 @@ interface ITodoState {
 
 interface INote {
   title: string;
+  created: number;
   todoList: ITodo[];
 }
 
 interface ITodo {
   title: string;
+  created: number;
   done: boolean;
 }
 

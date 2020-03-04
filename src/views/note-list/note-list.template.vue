@@ -3,7 +3,7 @@
     <note
       v-for="(note, index) in noteList"
       :note="note"
-      :key="index"
+      :key="note.created"
       @note-edit="onNoteEdit(index)"
       @note-delete="onNoteDelete(index)"
     />

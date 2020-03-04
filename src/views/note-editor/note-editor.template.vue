@@ -4,29 +4,50 @@
       <p class="note-editor__header-text paragraph">
         {{ noteToEdit === "new" ? "Add" : "Edit" }} Note
       </p>
-      <div
-        class="basic-button basic-button--default"
-        @click="$router.push('/')"
-      >
-        Back to list
+
+      <div class="note-editor__button-group">
+        <div
+          class="basic-button basic-button--default"
+          :class="{ 'basic-button--disabled': !noteSnapshotsUndoStack.length }"
+          @click="onUndoLastChange"
+        >
+          Undo
+        </div>
+
+        <div
+          class="basic-button basic-button--default"
+          :class="{ 'basic-button--disabled': !noteSnapshotsRedoStack.length }"
+          @click="onRedoLastChange"
+        >
+          Redo
+        </div>                
       </div>
-      <div
-        v-if="noteToEdit !== 'new'"
-        class="basic-button basic-button--warn"
-        @click="onDeleteNote"
-      >
-        Delete note
-      </div>
-      <div
-        v-if="noteToEdit !== 'new'"
-        class="basic-button basic-button--primary"
-        @click="onUndoChanges"
-      >
-        Undo changes
-      </div>
-      <div class="basic-button basic-button--success" @click="onSaveNote">
-        Save note
-      </div>
+
+      <div class="note-editor__button-group note-editor__button-group--justify-end">
+        <div
+          class="basic-button basic-button--default"
+          @click="$router.push('/')"
+        >
+          Back to list
+        </div>
+        <div
+          v-if="noteToEdit !== 'new'"
+          class="basic-button basic-button--warn"
+          @click="onDeleteNote"
+        >
+          Delete note
+        </div>
+        <div
+          v-if="noteToEdit !== 'new'"
+          class="basic-button basic-button--primary"
+          @click="onUndoChanges"
+        >
+          Undo all changes
+        </div>
+        <div class="basic-button basic-button--success" @click="onSaveNote">
+          Save note
+        </div>        
+      </div>      
 
       <transition name="slideIn">
         <div
@@ -38,33 +59,23 @@
       </transition>
     </div>
     <div class="note-editor__content">
-      <div class="text-input">
-        <div
-          class="text-input__placeholder"
-          :class="{
-            'text-input__placeholder--transformed':
-              localNote.title && localNote.title.length > 0
-          }"
-        >
-          Note Title
-        </div>
-        <input
-          class="text-input__input"
-          type="text"
-          v-model="localNote.title"
-        />
-      </div>
+      <custom-input 
+        :placeholder="'Note Title'" 
+        :value="localNote.title"
+        @change="(value) => onNoteChange('title', { data: value })"
+      />
       <div class="note-editor__todo-list">
         <p class="paragraph note-editor__todo-header">Todo's:</p>
         <todo-item 
           v-for="(todo, index) in localNote.todoList"
-          :key="index"
+          ref="todo-item"
+          :key="todo.created"
           :todo="todo"
-          @todo-delete="onDeleteTodo(index)"
-          @todo-change="(newTodo) => onChangeTodo(index, newTodo)"
+          @todo-delete="onNoteChange('delete-todo', { index })"
+          @todo-change="(newTodo) => onNoteChange('todo', { index, data: newTodo })"
         />
       </div>
-      <div class="basic-button basic-button--primary" @click="addTodo">
+      <div class="basic-button basic-button--primary" @click="onNoteChange('add-todo')">
         Add Todo
       </div>
     </div>
@@ -105,6 +116,14 @@ export default class NoteEditorTemplate extends NoteEditHandler {}
     border-bottom: 1px solid $default-gray-color;
     .basic-button {
       margin-right: 0.5rem;
+    }
+  }
+  &__button-group {
+    display: flex;
+    flex-grow: 1;
+
+    &--justify-end {
+      justify-content: flex-end;
     }
   }
   &__header-text {

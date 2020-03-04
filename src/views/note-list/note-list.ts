@@ -12,16 +12,19 @@ import ModalWindow from "../../components/modal-component.vue";
     ModalWindow
   }
 })
+
 export default class NoteList extends Vue {
   @Getter("TODO_LIST_STORE/noteList")
   noteList!: INote[];
 
   @Mutation("TODO_LIST_STORE/DELETE_NOTE")
   deleteNote!: (noteIndex: number) => void;
+
   @Mutation("TODO_LIST_STORE/LOAD_NOTE_LIST")
   loadNoteList!: () => void;
 
   isDeleteModalShow = false;
+  
   noteToDelete = -1;
 
   onAddNote(): void {
